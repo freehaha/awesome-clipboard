@@ -17,3 +17,5 @@ awful.key({ modkey },            "v",     clipboard_menu),
 the default storage of the clipboard is ~/.sel and can be
 changed in clipboard.lua to fit your need.
 
+#LICENSE
+this software is distributed in MIT License
