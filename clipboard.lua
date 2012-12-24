@@ -105,11 +105,11 @@ end
 function copy_to_clipboard()
 	local sel = selection()
 	local file = io.open(clipboard_path, "a")
-	sel = string.gsub(sel, '(\n)', '#NL')
 	naughty.notify({
 		text = sel,
 		timeout = 3
 	})
+	sel = string.gsub(sel, '(\n)', '#NL')
 	file:write(sel)
 	file:write("\n")
 	file:flush()
