@@ -72,10 +72,10 @@ local function utf8sub(str, startChar, numChars)
   return str:sub(startIndex, currentIndex - 1)
 end
 
-function clipboard_menu()
-	entries = {}
-	i = 1
-	for line in io.lines(clipboard_path) do
+function read_entries(f)
+	local i = 1
+	local entries = {}
+	for line in f:lines() do
 		local idx = i
 		entries[i] = {
 			utf8sub(line, 0, 25) .. "...",
@@ -90,6 +90,26 @@ function clipboard_menu()
 		}
 		i = i + 1
 	end
+	return entries
+end
+
+function clipboard_menu()
+	local entries = nil
+	local f = io.open(clipboard_path, "r")
+	if f ~= nil then
+		entries = read_entries(f)
+		f:close()
+	end
+
+	-- check if there is any entry, or stops here
+	if entries == nil or #entries == 0 then
+		naughty.notify({
+			text = "no cached entries",
+			timeout = 3
+		})
+		return
+	end
+
 	awful.menu.new({
 		items = entries,
 		width = 300,
@@ -104,7 +124,14 @@ end
 
 function copy_to_clipboard()
 	local sel = selection()
-	local file = io.open(clipboard_path, "a")
+	local file, errmsg = io.open(clipboard_path, "a+")
+	if file == nil then
+		naughty.notify({
+			text = errmsg,
+			timeout = 3
+		})
+		return
+	end
 	naughty.notify({
 		text = sel,
 		timeout = 3
